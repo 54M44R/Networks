@@ -111,6 +111,30 @@ public class NetworkNode {
                     this.getRoot().setOverburdened(true);
                     return;
                 }
+
+                // Skip adding node if interface facing that node
+                // Skip adding node if node is facing interface
+                // We do not want to propagate potentially into another network
+                if (this.nodeType == NodeType.INTERFACE) {
+                    BlockFace interfaceBlockFace = BlockFace.valueOf(BlockStorage.getLocationInfo(this.nodePosition, "direction"));
+                    // Ensure that when checking blocks which aren't directional, return SELF
+                    BlockFace testBlockFace = BlockFace.valueOf(BlockStorage.getLocationInfo(
+                            testLocation, "direction") == null ? "SELF" : BlockStorage.getLocationInfo(testLocation, "direction"));
+
+                    if (interfaceBlockFace == face || testBlockFace == face.getOppositeFace()) {
+                        continue;
+                    }
+                }
+
+                // Skip adding interface node if interface facing node
+                // Skip adding interface node if not configured (Prevents accidental connection between two controllers)
+                else if (testType == NodeType.INTERFACE) {
+                    BlockFace interfaceBlockFace = BlockFace.valueOf(BlockStorage.getLocationInfo(testLocation, "direction"));
+                    if (interfaceBlockFace == face.getOppositeFace() || interfaceBlockFace == BlockFace.SELF) {
+                        continue;
+                    }
+                }
+
                 final NetworkNode networkNode = new NetworkNode(testLocation, testType);
                 addChild(networkNode);
                 networkNode.addAllChildren();
