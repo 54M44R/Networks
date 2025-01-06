@@ -9,6 +9,7 @@ import io.github.sefiraat.networks.network.stackcaches.ItemRequest;
 import io.github.sefiraat.networks.network.stackcaches.QuantumCache;
 import io.github.sefiraat.networks.slimefun.network.NetworkDirectional;
 import io.github.sefiraat.networks.slimefun.network.NetworkGreedyBlock;
+import io.github.sefiraat.networks.slimefun.network.NetworkInterface;
 import io.github.sefiraat.networks.slimefun.network.NetworkPowerNode;
 import io.github.sefiraat.networks.slimefun.network.NetworkQuantumStorage;
 import io.github.sefiraat.networks.utils.StackUtils;
@@ -34,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NetworkRoot extends NetworkNode {
 
     private final Set<Location> nodeLocations = new HashSet<>();
+    private final Set<Location> networkInUse = new HashSet<>();
     private final int maxNodes;
     private boolean isOverburdened = false;
 
@@ -283,6 +285,7 @@ public class NetworkRoot extends NetworkNode {
         }
 
         final Set<Location> addedLocations = ConcurrentHashMap.newKeySet();
+        final Set<Location> storageLocations = ConcurrentHashMap.newKeySet();
         final Set<BarrelIdentity> barrelSet = ConcurrentHashMap.newKeySet();
 
         for (Location cellLocation : this.monitors) {
@@ -306,7 +309,8 @@ public class NetworkRoot extends NetworkNode {
                 .isInfinityExpansion() && slimefunItem instanceof StorageUnit unit) {
                 final BlockMenu menu = BlockStorage.getInventory(testLocation);
                 final InfinityBarrel infinityBarrel = getInfinityBarrel(menu, unit);
-                if (infinityBarrel != null) {
+                if (infinityBarrel != null && !storageLocations.contains(testLocation)) {
+                    storageLocations.add(testLocation);
                     barrelSet.add(infinityBarrel);
                 }
                 continue;
@@ -315,11 +319,36 @@ public class NetworkRoot extends NetworkNode {
             if (slimefunItem instanceof NetworkQuantumStorage) {
                 final BlockMenu menu = BlockStorage.getInventory(testLocation);
                 final NetworkStorage storage = getNetworkStorage(menu);
-                if (storage != null) {
+                if (storage != null && !storageLocations.contains(testLocation)) {
+                    storageLocations.add(testLocation);
                     barrelSet.add(storage);
                 }
+                continue;
             }
 
+            if (slimefunItem instanceof NetworkInterface) {
+                final NodeDefinition definition = io.github.sefiraat.networks.NetworkStorage.getAllNetworkObjects().get(testLocation);
+                if (definition.getNode() == null) {
+                    continue;
+                }
+                final Location rootLocation = definition.getNode().getRoot().getNodePosition();
+
+                // Lock all interfaces from communicating with linked network to prevent recursion
+                // Necessary as there may be two or more networks having a multi-way connection
+                if (!networkInUse.contains(rootLocation)) {
+                    networkInUse.add(rootLocation);
+
+                    final BlockMenu menu = BlockStorage.getInventory(testLocation);
+                    final Set<NetworkStorage> storageSet = getSharedNetworkStorage(menu, storageLocations);
+
+                    for (NetworkStorage storage : storageSet) {
+                        if (storage != null) {
+                            barrelSet.add(storage);
+                        }
+                    }
+                    networkInUse.remove(rootLocation);
+                }
+            }
         }
 
         this.barrels = barrelSet;
@@ -388,6 +417,28 @@ public class NetworkRoot extends NetworkNode {
             clone,
             storedInt
         );
+    }
+
+    @Nullable
+    private Set<NetworkStorage> getSharedNetworkStorage(@Nonnull BlockMenu blockMenu, @Nonnull Set<Location> storageLocations) {
+        final NodeDefinition interfaceNode = io.github.sefiraat.networks.NetworkStorage.getAllNetworkObjects().get(blockMenu.getLocation());
+
+        if (interfaceNode.getNode() == null) {
+            return null;
+        }
+
+        final NetworkRoot root = interfaceNode.getNode().getRoot();
+        final Set<NetworkStorage> quantumStorage = new HashSet<>();
+
+        for (BarrelIdentity barrelIdentity : root.getBarrels()) {
+            // Ensure that if a player creates a multi-way connection, we don't add redundant NetworkStorage objects
+            // This does not handle all edge cases. Method networkInUse() used to handle those edge cases
+            if (!storageLocations.contains(barrelIdentity.getLocation())) {
+                storageLocations.add(barrelIdentity.getLocation());
+                quantumStorage.add(getNetworkStorage(BlockStorage.getInventory(barrelIdentity.getLocation())));
+            }
+        }
+        return quantumStorage;
     }
 
     @Nonnull
