@@ -39,6 +39,7 @@ public class NetworkRoot extends NetworkNode {
 
     private final Set<Location> bridges = ConcurrentHashMap.newKeySet();
     private final Set<Location> monitors = ConcurrentHashMap.newKeySet();
+    private final Set<Location> interfaces = ConcurrentHashMap.newKeySet();
     private final Set<Location> importers = ConcurrentHashMap.newKeySet();
     private final Set<Location> exporters = ConcurrentHashMap.newKeySet();
     private final Set<Location> grids = ConcurrentHashMap.newKeySet();
@@ -73,6 +74,7 @@ public class NetworkRoot extends NetworkNode {
             }
             case BRIDGE -> bridges.add(location);
             case STORAGE_MONITOR -> monitors.add(location);
+            case INTERFACE -> interfaces.add(location);
             case IMPORT -> importers.add(location);
             case EXPORT -> exporters.add(location);
             case GRID -> grids.add(location);
@@ -125,6 +127,10 @@ public class NetworkRoot extends NetworkNode {
 
     public Set<Location> getMonitors() {
         return this.monitors;
+    }
+
+    public Set<Location> getInterfaces() {
+        return this.interfaces;
     }
 
     public Set<Location> getImporters() {

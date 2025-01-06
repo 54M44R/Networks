@@ -41,6 +41,7 @@ public class NetworksSlimefunItemStacks {
     public static final SlimefunItemStack NETWORK_CONTROLLER;
     public static final SlimefunItemStack NETWORK_BRIDGE;
     public static final SlimefunItemStack NETWORK_MONITOR;
+    public static final SlimefunItemStack NETWORK_INTERFACE;
     public static final SlimefunItemStack NETWORK_IMPORT;
     public static final SlimefunItemStack NETWORK_EXPORT;
     public static final SlimefunItemStack NETWORK_GRABBER;
@@ -235,6 +236,19 @@ public class NetworksSlimefunItemStacks {
             "Currently Supports:",
             "Infinity Barrels",
             "Network Shells"
+        );
+
+        NETWORK_INTERFACE = Theme.themedSlimefunItemStack(
+                "NTW_INTERFACE",
+                new ItemStack(Material.GRAY_STAINED_GLASS),
+                Theme.MACHINE,
+                "Network Interface",
+                "The Network Interface allows simple",
+                "subnetworks to be made by exposing",
+                "the contents of the network to a monitor it is facing.",
+                "",
+                "The Interface exposes the contents",
+                "by \"pretending\" the network its on is storage."
         );
 
         NETWORK_IMPORT = Theme.themedSlimefunItemStack(

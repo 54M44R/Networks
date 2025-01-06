@@ -4,6 +4,7 @@ public enum NodeType {
     CONTROLLER,
     BRIDGE,
     STORAGE_MONITOR,
+    INTERFACE,
     IMPORT,
     EXPORT,
     GRID,

@@ -12,6 +12,7 @@ import io.github.sefiraat.networks.slimefun.network.NetworkExport;
 import io.github.sefiraat.networks.slimefun.network.NetworkGrabber;
 import io.github.sefiraat.networks.slimefun.network.NetworkGreedyBlock;
 import io.github.sefiraat.networks.slimefun.network.NetworkImport;
+import io.github.sefiraat.networks.slimefun.network.NetworkInterface;
 import io.github.sefiraat.networks.slimefun.network.NetworkMonitor;
 import io.github.sefiraat.networks.slimefun.network.NetworkPowerDisplay;
 import io.github.sefiraat.networks.slimefun.network.NetworkPowerNode;
@@ -62,6 +63,7 @@ public class NetworkSlimefunItems {
     public static final NetworkController NETWORK_CONTROLLER;
     public static final NetworkBridge NETWORK_BRIDGE;
     public static final NetworkMonitor NETWORK_MONITOR;
+    public static final NetworkInterface NETWORK_INTERFACE;
     public static final NetworkImport NETWORK_IMPORT;
     public static final NetworkExport NETWORK_EXPORT;
     public static final NetworkGrabber NETWORK_GRABBER;
@@ -649,6 +651,17 @@ public class NetworkSlimefunItems {
             }
         );
 
+        NETWORK_INTERFACE = new NetworkInterface(
+            NetworksItemGroups.NETWORK_ITEMS,
+            NetworksSlimefunItemStacks.NETWORK_INTERFACE,
+            RecipeType.ENHANCED_CRAFTING_TABLE,
+            new ItemStack[]{
+                NETWORK_BRIDGE.getItem(), NETWORK_QUANTUM_STORAGE_1.getItem(), NETWORK_BRIDGE.getItem(),
+                NETWORK_MONITOR.getItem(), OPTIC_CABLE.getItem(), NETWORK_MONITOR.getItem(),
+                NETWORK_BRIDGE.getItem(), NETWORK_QUANTUM_STORAGE_1.getItem(), NETWORK_BRIDGE.getItem()
+            }
+        );
+
         NETWORK_RECIPE_ENCODER = new NetworkEncoder(
             NetworksItemGroups.NETWORK_ITEMS,
             NetworksSlimefunItemStacks.NETWORK_RECIPE_ENCODER,
@@ -852,6 +865,7 @@ public class NetworkSlimefunItems {
         NETWORK_CONTROLLER.register(plugin);
         NETWORK_BRIDGE.register(plugin);
         NETWORK_MONITOR.register(plugin);
+        NETWORK_INTERFACE.register(plugin);
         NETWORK_IMPORT.register(plugin);
         NETWORK_EXPORT.register(plugin);
         NETWORK_GRABBER.register(plugin);

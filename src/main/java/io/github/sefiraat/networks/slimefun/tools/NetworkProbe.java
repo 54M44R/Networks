@@ -56,6 +56,7 @@ public class NetworkProbe extends SlimefunItem implements CanCooldown {
         if (root != null) {
             final int bridges = root.getBridges().size();
             final int monitors = root.getMonitors().size();
+            final int interfaces = root.getInterfaces().size();
             final int importers = root.getImporters().size();
             final int exporters = root.getExporters().size();
             final int grids = root.getGrids().size();
@@ -86,6 +87,7 @@ public class NetworkProbe extends SlimefunItem implements CanCooldown {
 
             player.sendMessage(MESSAGE_FORMAT.format(new Object[]{c, "Bridges", p, bridges}, new StringBuffer(), null).toString());
             player.sendMessage(MESSAGE_FORMAT.format(new Object[]{c, "Monitors", p, monitors}, new StringBuffer(), null).toString());
+            player.sendMessage(MESSAGE_FORMAT.format(new Object[]{c, "Interfaces", p, interfaces}, new StringBuffer(), null).toString());
             player.sendMessage(MESSAGE_FORMAT.format(new Object[]{c, "Importers", p, importers}, new StringBuffer(), null).toString());
             player.sendMessage(MESSAGE_FORMAT.format(new Object[]{c, "Exporters", p, exporters}, new StringBuffer(), null).toString());
             player.sendMessage(MESSAGE_FORMAT.format(new Object[]{c, "Grids", p, grids}, new StringBuffer(), null).toString());
